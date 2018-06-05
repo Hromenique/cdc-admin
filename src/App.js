@@ -18,7 +18,7 @@ class App extends Component {
     };
   }  
 
-  componentWillMount() {
+  componentDidMount() {
     console.log('componentWillMount');
 
     $.ajax({
@@ -91,7 +91,7 @@ class App extends Component {
                 <tbody>
                   {
                     this.state.lista.map(autor => (
-                      <tr>
+                      <tr key={ `${autor.id}`}>
                         <td>{autor.nome}</td>
                         <td>{autor.email}</td>
                       </tr>
