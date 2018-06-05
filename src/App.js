@@ -16,11 +16,7 @@ class App extends Component {
         }
       ]
     };
-  }
-
-  componentDidMount() {
-    console.log('componentDidMount');
-  }
+  }  
 
   componentWillMount() {
     console.log('componentWillMount');
@@ -30,7 +26,7 @@ class App extends Component {
       dataType: 'json',
       success: resposta => {
         console.log(resposta);
-        this.state = { lista: resposta };
+        this.setState({ lista: resposta });
       }
     });
   }
