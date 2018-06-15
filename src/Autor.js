@@ -3,6 +3,7 @@ import $ from 'jquery';
 import InputCustomizado from './componentes/InputCustomizado';
 import BotaoSubmitCustomizado from './componentes/BotaoSubmitCustomizado';
 import PubSub from 'pubsub-js';
+import TratadorErrors from './TratadorErros';
 
 class FormularioAutor extends Component {
 
@@ -10,7 +11,6 @@ class FormularioAutor extends Component {
         super();
 
         this.state = {
-            // lista: [],
             nome: '',
             email: '',
             senha: ''
@@ -44,8 +44,16 @@ class FormularioAutor extends Component {
             dataType: 'json',
             type: 'post',
             data: JSON.stringify({ nome: this.state.nome, email: this.state.email, senha: this.state.senha }),
-            success: novaListagem => PubSub.publish('atualiza-lista-autores', novaListagem),
-            error: resposta => console.log('erro')
+            success: function (novaListagem) {
+                PubSub.publish('atualiza-lista-autores', novaListagem);
+                this.setState({ nome: '', email: '', senha: '' });
+            }.bind(this),
+            error: resposta => {
+                if (resposta.status === 400) {
+                    new TratadorErrors().publicaErros(resposta.responseJSON);
+                }
+            },
+            beforeSend: () => PubSub.publish('limpa-erros', {})
         });
     }
 
@@ -63,7 +71,7 @@ class FormularioAutor extends Component {
     }
 }
 
-class TabelaAutores extends Component {    
+class TabelaAutores extends Component {
 
     render() {
         return (
@@ -108,8 +116,8 @@ export default class AutorBox extends Component {
             }).bind(this)
         });
 
-        PubSub.subscribe('atualiza-lista-autores',  
-            function(topico, novaListagem){this.setState({ lista: novaListagem })}.bind(this));
+        PubSub.subscribe('atualiza-lista-autores',
+            function (topico, novaListagem) { this.setState({ lista: novaListagem }) }.bind(this));
     }
 
     atualizaListagem(novaLista) {
