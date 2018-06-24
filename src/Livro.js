@@ -112,17 +112,18 @@ export default class LivroBox extends Component {
         $.ajax({
             url: "http://localhost:8080/api/livros",
             dataType: 'json',
-            success: resposta => this.setState({ lista: resposta })
-            
+            success: (resposta => {
+                this.setState({ lista: resposta });
+            }).bind(this)
         });
 
         $.ajax({
             url: "http://localhost:8080/api/autores",
             dataType: 'json',
-            success: resposta => {
+            success: (resposta => {
                 let autores = resposta.map(autor => { return { optionValue: autor.id, optionLabel: autor.nome } });
                 this.setState({ autores: autores });
-            }
+            }).bind(this)
         });
 
         PubSub.subscribe('atualiza-lista-livros',
